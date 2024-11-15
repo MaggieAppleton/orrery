@@ -1,0 +1,32 @@
+orrery/
+├── components/
+│   ├── layout/
+│   │   ├── AppHeader.vue
+│   │   └── AppFooter.vue
+│   ├── exploration/
+│   │   ├── TopicInput.vue
+│   │   ├── BeliefCapture.vue
+│   │   ├── ClaimsList.vue
+│   │   ├── ClaimValidation.vue
+│   │   ├── EvidenceCollection.vue
+│   │   └── ImplicationsExplorer.vue
+│   └── common/
+│       ├── VoiceInput.vue
+│       └── LoadingState.vue
+├── pages/
+│   ├── index.vue
+│   ├── explore/
+│   │   ├── [id].vue
+│   │   ├── topic.vue
+│   │   ├── beliefs.vue
+│   │   ├── claims.vue
+│   │   ├── validation.vue
+│   │   ├── evidence.vue
+│   │   ├── implications.vue
+│   │   └── summary.vue
+├── stores/
+│   └── exploration.ts
+├── types/
+│   └── index.ts
+└── utils/
+    └── promptManager.ts 
