@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+import TopicInput from "~/components/exploration/TopicInput.vue";
+
 const router = useRouter();
 const { startNewExploration } = useExploration();
 const topic = ref("");

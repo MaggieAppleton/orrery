@@ -55,6 +55,8 @@
 </template>
 
 <script setup lang="ts">
+import { useVoiceTranscription } from "@/composables/useVoiceTranscription";
+
 const props = defineProps<{
 	topic: string;
 	modelValue: string;
@@ -70,38 +72,19 @@ const beliefs = computed({
 	set: (value) => emit("update:modelValue", value),
 });
 
-const isRecording = ref(false);
-const recordingTime = ref(0);
-let recordingInterval: NodeJS.Timeout | null = null;
+const { isRecording, recordingTime, startRecording, stopRecording } =
+	useVoiceTranscription();
 
-const toggleVoiceInput = () => {
-	if (isRecording.value) {
-		stopRecording();
-	} else {
-		startRecording();
+const toggleVoiceInput = async () => {
+	try {
+		if (isRecording.value) {
+			const transcribedText = await stopRecording();
+			beliefs.value = beliefs.value.trim() + " " + transcribedText;
+		} else {
+			await startRecording();
+		}
+	} catch (error) {
+		alert(error instanceof Error ? error.message : "An error occurred");
 	}
 };
-
-const startRecording = () => {
-	isRecording.value = true;
-	recordingTime.value = 0;
-	recordingInterval = setInterval(() => {
-		recordingTime.value++;
-	}, 1000);
-	// TODO: Implement actual voice recording logic
-};
-
-const stopRecording = () => {
-	isRecording.value = false;
-	if (recordingInterval) {
-		window.clearInterval(recordingInterval);
-	}
-	// TODO: Implement stop recording and transcription logic
-};
-
-onUnmounted(() => {
-	if (recordingInterval) {
-		window.clearInterval(recordingInterval);
-	}
-});
 </script>

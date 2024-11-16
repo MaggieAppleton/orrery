@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 
 interface Claim {
 	id: string;
@@ -69,52 +69,88 @@ export function useExploration() {
 		}
 	}
 
-	const removeClaim = (id: string) => {
+	function removeClaim(id: string) {
 		if (currentExploration.value) {
-			currentExploration.value.claims = currentExploration.value.claims.filter(c => c.id !== id)
+			currentExploration.value.claims = currentExploration.value.claims.filter(
+				(c) => c.id !== id
+			);
 		}
 	}
 
 	function validateClaim(id: string, isValid: boolean) {
 		if (currentExploration.value) {
-			const claim = currentExploration.value.claims.find(c => c.id === id)
+			const claim = currentExploration.value.claims.find((c) => c.id === id);
 			if (claim) {
-				claim.isValid = isValid
+				claim.isValid = isValid;
 			}
 		}
 	}
 
 	function addEvidence(claimId: string, evidence: string) {
 		if (currentExploration.value) {
-			const claim = currentExploration.value.claims.find(c => c.id === claimId)
+			const claim = currentExploration.value.claims.find(
+				(c) => c.id === claimId
+			);
 			if (claim) {
 				if (!claim.evidence) {
-					claim.evidence = []
+					claim.evidence = [];
 				}
-				claim.evidence.push(evidence)
+				claim.evidence.push(evidence);
 			}
 		}
 	}
 
 	function removeEvidence(claimId: string, index: number) {
 		if (currentExploration.value) {
-			const claim = currentExploration.value.claims.find(c => c.id === claimId)
+			const claim = currentExploration.value.claims.find(
+				(c) => c.id === claimId
+			);
 			if (claim && claim.evidence) {
-				claim.evidence.splice(index, 1)
+				claim.evidence.splice(index, 1);
 			}
 		}
 	}
 
 	function addImplication(implication: string) {
 		if (currentExploration.value) {
-			currentExploration.value.implications.push(implication)
+			currentExploration.value.implications.push(implication);
 		}
 	}
 
 	function removeImplication(index: number) {
 		if (currentExploration.value) {
-			currentExploration.value.implications.splice(index, 1)
+			currentExploration.value.implications.splice(index, 1);
 		}
+	}
+
+	// Add persistence
+	if (import.meta.client) {
+		const saved = localStorage.getItem("orrery-explorations");
+		if (saved) {
+			try {
+				const data = JSON.parse(saved);
+				explorations.value = data.explorations;
+				if (data.currentExploration) {
+					currentExploration.value = data.currentExploration;
+				}
+			} catch (e) {
+				console.error("Failed to load saved explorations:", e);
+			}
+		}
+
+		watch(
+			[currentExploration, explorations],
+			() => {
+				localStorage.setItem(
+					"orrery-explorations",
+					JSON.stringify({
+						currentExploration: currentExploration.value,
+						explorations: explorations.value,
+					})
+				);
+			},
+			{ deep: true }
+		);
 	}
 
 	return {
